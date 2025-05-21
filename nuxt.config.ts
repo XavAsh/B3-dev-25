@@ -11,4 +11,10 @@ export default defineNuxtConfig({
       ],
     },
   },
+  runtimeConfig: {
+    adminPassword: process.env.NUXT_ADMIN_PASSWORD,
+    public: {
+      apiUrl: "",
+    },
+  },
 });

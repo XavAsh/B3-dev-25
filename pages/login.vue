@@ -17,12 +17,30 @@
       >
         Login
       </button>
+      <p v-if="error" class="text-red-500 mt-2">{{ error }}</p>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-const password = ref("");
+import { useLocalStorage } from "@vueuse/core";
 
-const handleLogin = () => {};
+definePageMeta({
+  middleware: ["auth"],
+});
+
+const password = ref("");
+const error = ref("");
+const isAuthenticated = useLocalStorage<boolean>("is-authenticated", false);
+const config = useRuntimeConfig();
+const router = useRouter();
+
+const handleLogin = () => {
+  if (password.value === config.adminPassword) {
+    isAuthenticated.value = true;
+    router.push("/admin");
+  } else {
+    error.value = "Invalid password";
+  }
+};
 </script>

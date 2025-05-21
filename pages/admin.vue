@@ -4,12 +4,17 @@
     <button
       class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
       @click="generateProducts"
+      :disabled="isGenerated"
     >
-      Generate Products
+      {{ isGenerated ? "Products Generated" : "Generate Products" }}
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-const generateProducts = () => {};
+definePageMeta({
+  middleware: ["auth"],
+});
+
+const { generateProducts, isGenerated } = useProducts();
 </script>
