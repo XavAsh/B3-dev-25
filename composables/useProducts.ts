@@ -1,24 +1,64 @@
 import { useLocalStorage } from "@vueuse/core";
 import type { Product } from "~/types/products";
+import Fuse from "fuse.js";
 
 export const useProducts = () => {
   const products = useLocalStorage<Product[]>("products", []);
-  const isGenerated = useLocalStorage<boolean>("products-generated", false);
+  const searchQuery = ref("");
+  const results = ref<Product[]>([]);
+  let fuse: Fuse<Product>;
+
+  const initializeSearch = () => {
+    console.log("Initializing search with products:", products.value.length);
+    fuse = new Fuse(products.value, {
+      keys: ["title", "category", "description"],
+      threshold: 0.3,
+    });
+  };
 
   const generateProducts = async () => {
-    if (isGenerated.value) return;
+    if (products.value.length > 0) {
+      console.log("Products already exist:", products.value.length);
+      return;
+    }
 
-    // We'll implement the actual product generation later
-    // This is just a placeholder for now
-    const response = await fetch("https://fakestoreapi.com/products?limit=200");
-    const data = await response.json();
-    products.value = data;
-    isGenerated.value = true;
+    try {
+      console.log("Fetching products from API...");
+      const newProducts = await $fetch<Product[]>("/api/products");
+      if (!newProducts || newProducts.length === 0) {
+        throw new Error("No products were generated");
+      }
+      console.log("Received products from API:", newProducts.length);
+      products.value = newProducts;
+      initializeSearch();
+    } catch (error) {
+      console.error("Error in generateProducts:", error);
+      throw error;
+    }
   };
+
+  const filteredProducts = computed(() => {
+    return searchQuery.value.length > 0 ? results.value : products.value;
+  });
+
+  watch(searchQuery, () => {
+    if (fuse) {
+      results.value = fuse
+        .search(searchQuery.value)
+        .map((result) => result.item);
+    }
+  });
+
+  // Initialize search if products exist
+  if (products.value.length > 0) {
+    console.log("Products exist on init:", products.value.length);
+    initializeSearch();
+  }
 
   return {
     products,
-    isGenerated,
     generateProducts,
+    searchQuery,
+    filteredProducts,
   };
 };
