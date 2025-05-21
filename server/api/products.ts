@@ -6,15 +6,24 @@ const generateRating = (): Rating => ({
   count: faker.number.int({ min: 10, max: 1000 }),
 });
 
-const generateProduct = (id: number): Product => ({
-  id,
-  title: faker.commerce.productName(),
-  price: parseFloat(faker.commerce.price()),
-  description: faker.commerce.productDescription(),
-  category: faker.commerce.department(),
-  image: faker.image.urlLoremFlickr({ category: "product" }),
-  rating: generateRating(),
-});
+const generateProduct = (id: number): Product => {
+  const imageUrl = faker.image.urlLoremFlickr({
+    category: "product",
+    width: 400,
+    height: 400,
+  });
+  console.log(`Generated image URL for product ${id}:`, imageUrl);
+
+  return {
+    id,
+    title: faker.commerce.productName(),
+    price: parseFloat(faker.commerce.price()),
+    description: faker.commerce.productDescription(),
+    category: faker.commerce.department(),
+    image: imageUrl,
+    rating: generateRating(),
+  };
+};
 
 export default defineEventHandler(async (event) => {
   console.log("Generating products...");
