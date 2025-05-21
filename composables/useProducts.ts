@@ -1,5 +1,5 @@
 import { useLocalStorage } from "@vueuse/core";
-import type { Product } from "~/types/products";
+import type { Product, Rating } from "~/types/products";
 import Fuse from "fuse.js";
 
 export const useProducts = () => {
@@ -9,7 +9,6 @@ export const useProducts = () => {
   let fuse: Fuse<Product>;
 
   const initializeSearch = () => {
-    console.log("Initializing search with products:", products.value.length);
     fuse = new Fuse(products.value, {
       keys: ["title", "category", "description"],
       threshold: 0.3,
@@ -17,28 +16,27 @@ export const useProducts = () => {
   };
 
   const generateProducts = async () => {
-    if (products.value.length > 0) {
-      console.log("Products already exist:", products.value.length);
-      return;
-    }
+    // Clear existing products and cart
+    products.value = [];
+    localStorage.removeItem("cart");
 
     try {
-      console.log("Fetching products from API...");
-      const newProducts = await $fetch<Product[]>("/api/products");
-      if (!newProducts || newProducts.length === 0) {
-        throw new Error("No products were generated");
-      }
-      console.log("Received products from API:", newProducts.length);
+      const newProducts = await $fetch("/api/products");
       products.value = newProducts;
       initializeSearch();
     } catch (error) {
-      console.error("Error in generateProducts:", error);
-      throw error;
+      console.error("Error generating products:", error);
     }
   };
 
   const filteredProducts = computed(() => {
-    return searchQuery.value.length > 0 ? results.value : products.value;
+    if (!searchQuery.value) return products.value;
+    const query = searchQuery.value.toLowerCase();
+    return products.value.filter(
+      (product) =>
+        product.title.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query)
+    );
   });
 
   watch(searchQuery, () => {
@@ -49,9 +47,7 @@ export const useProducts = () => {
     }
   });
 
-  // Initialize search if products exist
   if (products.value.length > 0) {
-    console.log("Products exist on init:", products.value.length);
     initializeSearch();
   }
 

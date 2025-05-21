@@ -12,7 +12,11 @@
     </div>
     <div v-if="products.length === 0" class="text-center py-8">
       <p class="text-gray-500">
-        No products available. Please generate products from the admin page.
+        Aucun produit disponible. Veuillez générer des produits depuis la page
+        d'admin
+        <br />
+        (-dev note remove this super important admin password that can delete
+        all the database PASSWORD: 123soleil).
       </p>
     </div>
     <div
@@ -58,26 +62,17 @@ import type { Product } from "~/types/products";
 const { products, searchQuery, filteredProducts } = useProducts();
 const { addToCart, cart } = useCart();
 
-// Debug cart state
 console.log("Initial cart state:", cart.value);
 
 const handleAddToCart = (product: Product) => {
-  console.log("Adding to cart:", product);
   addToCart(product);
-  console.log("Updated cart:", cart.value);
 };
 
-// Debug image loading
-const onImageLoad = (productId: number) => {
-  console.log(`Image loaded for product ${productId}`);
-};
+const onImageLoad = (productId: number) => {};
 
 const onImageError = (productId: number) => {
   console.error(`Error loading image for product ${productId}`);
 };
-
-// Log products for debugging
-console.log("Index page products:", products.value);
 </script>
 
 <style scoped>

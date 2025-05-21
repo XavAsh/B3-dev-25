@@ -12,7 +12,6 @@ const generateProduct = (id: number): Product => {
     width: 400,
     height: 400,
   });
-  console.log(`Generated image URL for product ${id}:`, imageUrl);
 
   return {
     id,
@@ -26,11 +25,9 @@ const generateProduct = (id: number): Product => {
 };
 
 export default defineEventHandler(async (event) => {
-  console.log("Generating products...");
   const newProducts: Product[] = [];
   for (let i = 1; i <= 200; i++) {
     newProducts.push(generateProduct(i));
   }
-  console.log(`Generated ${newProducts.length} products`);
   return newProducts;
 });

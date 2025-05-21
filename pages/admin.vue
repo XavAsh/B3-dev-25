@@ -19,7 +19,6 @@ definePageMeta({
 });
 
 const { generateProducts, products } = useProducts();
-console.log(products.value);
 const isLoading = ref(false);
 const error = ref("");
 

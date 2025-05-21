@@ -45,18 +45,12 @@ import { useCart } from "~/composables/useCart";
 
 const { cart } = useCart();
 
-// Debug cart state
-console.log("Current cart:", cart.value);
-
 const cartItemCount = computed(() => {
-  // Sum up all quantities in the cart
   const count = cart.value.reduce((total, item) => {
-    // If item has quantity property, use it, otherwise count as 1
     const quantity = "quantity" in item ? item.quantity : 1;
     return total + quantity;
   }, 0);
 
-  console.log("Total items in cart:", count);
   return count;
 });
 </script>
