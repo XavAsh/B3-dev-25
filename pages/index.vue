@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Store</h1>
     <div class="mb-4">
@@ -40,7 +41,7 @@
         <p class="text-gray-600 mb-2 line-clamp-2">{{ product.description }}</p>
         <p class="text-lg font-bold mb-2">${{ product.price }}</p>
         <button
-          @click="addToCart(product)"
+          @click="handleAddToCart(product)"
           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-auto"
         >
           Add to Cart
@@ -52,9 +53,19 @@
 
 <script setup lang="ts">
 import { useCart } from "~/composables/useCart";
+import type { Product } from "~/types/products";
 
 const { products, searchQuery, filteredProducts } = useProducts();
-const { addToCart } = useCart();
+const { addToCart, cart } = useCart();
+
+// Debug cart state
+console.log("Initial cart state:", cart.value);
+
+const handleAddToCart = (product: Product) => {
+  console.log("Adding to cart:", product);
+  addToCart(product);
+  console.log("Updated cart:", cart.value);
+};
 
 // Debug image loading
 const onImageLoad = (productId: number) => {
